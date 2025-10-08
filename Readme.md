@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Елена Старцева](https://up.htmlacademy.ru/javascript-individual/2/user/2487457).
-* Наставник: `Неизвестно`.
+* Наставник: [Виктория Никитина](https://htmlacademy.ru/profile/id1217273)
 
 ---
 
