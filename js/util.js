@@ -20,7 +20,6 @@ const sortArrayRandom = (array) => {
   return array;
 };
 
-
 const debounce = (cb, timeoutDelay = 500) => {
   let timeoutId;
 

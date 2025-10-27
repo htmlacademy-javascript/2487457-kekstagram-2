@@ -8,5 +8,4 @@ const renderFullImage = (photosData) => {
   likesCount.textContent = photosData.likes;
 };
 
-
 export { renderFullImage };

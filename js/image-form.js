@@ -3,6 +3,7 @@ import { sendData } from './api.js';
 import { openSuccessfulSendingMessage, openErrorSendingMessage } from './status-modals.js';
 import { resetImageForm } from './reset-image-form.js';
 import { imagePreview } from './image-scale.js';
+import { resetEffects } from './image-effects.js';
 
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const MAX_COMMENT_LENGTH = 140;
@@ -24,23 +25,21 @@ const imageHashtags = document.querySelector('.text__hashtags');
 const imageUploadInput = document.querySelector('.img-upload__input');
 const effectsPreviews = document.querySelectorAll('.effects__preview');
 
-//Создание валидатора формы
 const imageUploadValidator = new Pristine(imageUploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'img-upload__field-wrapper--error'
 });
 
-// Реализация открытия формы
 const onImageUploadOverlayKeyDown = (evt) => {
   if (isEscapeKey(evt) && imageComment !== document.activeElement && imageHashtags !== document.activeElement) {
     evt.preventDefault();
     closeImageUploadOverlay();
-    resetImageForm(imageUploadForm, imageUploadValidator);
+    resetImageForm(imageUploadForm, imageUploadValidator, resetEffects);
   }
 };
 
-resetImageForm(imageUploadForm, imageUploadValidator);
+resetImageForm(imageUploadForm, imageUploadValidator, resetEffects);
 
 const openImageUploadOverlay = () => {
   openSomeModal(imageUploadOverlay, onImageUploadOverlayKeyDown);
@@ -67,15 +66,12 @@ imageUploadInput.addEventListener('change', () => {
 
 imageUploadCancel.addEventListener('click', () => {
   closeImageUploadOverlay();
-  resetImageForm(imageUploadForm, imageUploadValidator);
+  resetImageForm(imageUploadForm, imageUploadValidator, resetEffects);
 });
 
-// Реализация валидации формы
-// Поле ввода комментария
 const validateComment = (value) => value.length < MAX_COMMENT_LENGTH;
 imageUploadValidator.addValidator(imageComment, validateComment, ErrorMessages.COMMENT_LENGTH_ERROR);
 
-// Поле ввода хэштегов
 const prepareHashtags = (value) => value.toLowerCase().trim().replace(/\s+/g, ' ').split(' ');
 
 const validateHashtags = (value) => {
@@ -107,7 +103,7 @@ imageUploadForm.addEventListener('submit', (evt) => {
     sendData(new FormData(evt.target))
       .then(() => {
         openSuccessfulSendingMessage();
-        resetImageForm(imageUploadForm, imageUploadValidator);
+        resetImageForm(imageUploadForm, imageUploadValidator, resetEffects);
       })
       .catch(() => {
         openErrorSendingMessage(openImageUploadOverlay);

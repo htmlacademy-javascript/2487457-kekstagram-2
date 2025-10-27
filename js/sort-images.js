@@ -1,7 +1,8 @@
-import { changeFilter, imageFiltersButtons } from './images-filters.js';
+import { changeFilter} from './images-filters.js';
 import { renderImages } from './thumbnail-render.js';
 import { sortArrayRandom, debounce } from './util.js';
 
+const filters = document.querySelector('.img-filters__form');
 const SORT_IMAGES_DELAY = 500;
 const RANDOM_IMAGES_COUNT = 10;
 
@@ -22,14 +23,16 @@ const renderImagesByFilter = (filterType, pictures, onPictureClick) => {
   }
   renderImages(sortingPictures, onPictureClick);
 };
+const renderImagesByFilterWithTimeOut = debounce(renderImagesByFilter, SORT_IMAGES_DELAY);
 
 const sortImages = (pictures, onPictureClick) => {
-  imageFiltersButtons.forEach((filterButton) => {
-    const renderImagesByFilterWithTimeOut = debounce(renderImagesByFilter, SORT_IMAGES_DELAY);
-    filterButton.addEventListener('click', () => {
-      const filterType = changeFilter(filterButton);
+  filters.addEventListener('click', ({ target }) => {
+    const button = target.closest('.img-filters__button');
+    if (button) {
+      changeFilter(button);
+      const filterType = button.id;
       renderImagesByFilterWithTimeOut(filterType, pictures, onPictureClick);
-    });
+    }
   });
 };
 

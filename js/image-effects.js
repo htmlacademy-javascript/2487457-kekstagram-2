@@ -1,14 +1,17 @@
+import { EFFECTS, Effects } from './constants.js';
 import { imagePreview } from './image-scale.js';
-import { effectOriginal, imageUploadEffectLevelFieldset } from './reset-image-form.js';
+import { imageUploadEffectLevelFieldset } from './reset-image-form.js';
 
 const SLIDER_DEFAULT_MIN = 0;
 const SLIDER_DEFAULT_MAX = 1;
 const SLIDER_DEFAULT_START = 1;
 const SLIDER_DEFAULT_STEP = 0.1;
 
-const effectsRadioInputs = document.querySelectorAll('.effects__radio:not(#effect-none)');
-const effectLevelValue = document.querySelector('.effect-level__value');
 const effectSliderContainer = document.querySelector('.effect-level__slider');
+const effectsList = document.querySelector('.effects__list');
+const valueElement = document.querySelector('.effect-level__value');
+
+let currentEffect = EFFECTS.NONE;
 
 noUiSlider.create(effectSliderContainer, {
   range: {
@@ -17,36 +20,45 @@ noUiSlider.create(effectSliderContainer, {
   },
   start: SLIDER_DEFAULT_START,
   step: SLIDER_DEFAULT_STEP,
+  format: {
+    to: function (value) {
+      return parseFloat(value);
+    },
+    from: function (value) {
+      return parseFloat(value);
+    },
+  },
   connect: 'lower'
 });
 
-for (const effectInput of effectsRadioInputs) {
-  effectInput.addEventListener('change', (evt) => {
+const renderImage = () => {
+  const { style, units } = Effects[currentEffect];
+  imagePreview.style.filter = `${style}(${valueElement.value}${units})`;
+};
+
+effectSliderContainer.noUiSlider.on('update', () => {
+  valueElement.value = effectSliderContainer.noUiSlider.get();
+  renderImage();
+});
+
+const updateSlider = () => {
+  const { slider } = Effects[currentEffect];
+  effectSliderContainer.noUiSlider.updateOptions(slider);
+};
+
+export const resetEffects = () => {
+  imageUploadEffectLevelFieldset.classList.add('hidden');
+  imagePreview.style.filter = '';
+};
+
+effectsList.addEventListener('change', (evt) => {
+  currentEffect = evt.target.value;
+  if (currentEffect === EFFECTS.NONE) {
+    resetEffects();
+  } else {
+    updateSlider();
     imageUploadEffectLevelFieldset.classList.remove('hidden');
-    effectSliderContainer.noUiSlider.updateOptions({
-      range: {
-        min: parseFloat(evt.target.dataset.min),
-        max: parseFloat(evt.target.dataset.max)
-      },
-      start: parseFloat(evt.target.dataset.max),
-      step: parseFloat(evt.target.dataset.step),
-      format: {
-        to: (value) => Number.isInteger(Number(value.toFixed(1))) ? value.toFixed(0) : value.toFixed(1),
-        from: (value) => parseFloat(value)
-      }
-    });
-
-    effectSliderContainer.noUiSlider.on('update', () => {
-      imagePreview.style.filter = `${effectInput.dataset.effect}(${effectSliderContainer.noUiSlider.get()}${effectInput.dataset.measure})`;
-      effectLevelValue.value = effectSliderContainer.noUiSlider.get();
-    });
-  });
-}
-
-effectOriginal.addEventListener('change', (evt) => {
-  if (evt.target.checked) {
-    imagePreview.style.filter = 'none';
-    imageUploadEffectLevelFieldset.classList.add('hidden');
-    effectLevelValue.value = '';
   }
 });
+
+resetEffects();
