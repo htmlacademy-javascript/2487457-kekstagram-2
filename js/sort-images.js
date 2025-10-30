@@ -2,9 +2,9 @@ import { changeFilter} from './images-filters.js';
 import { renderImages } from './thumbnail-render.js';
 import { sortArrayRandom, debounce } from './util.js';
 
-const filters = document.querySelector('.img-filters__form');
 const SORT_IMAGES_DELAY = 500;
 const RANDOM_IMAGES_COUNT = 10;
+const filters = document.querySelector('.img-filters__form');
 
 const sortArrayByComments = (a, b) => b.comments.length - a.comments.length;
 
